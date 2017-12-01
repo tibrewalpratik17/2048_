@@ -2,14 +2,16 @@ import random, pygame, sys
 from pygame.locals import *
 from random import randint
 import copy
+
 #defining the window size and other different specifications of the window
+
 FPS = 5
 WINDOWWIDTH = 640
 WINDOWHEIGHT = 640
 boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4;
 margin = 5
 thickness = 0
-#defining the RGB for various colours used 
+#defining the RGB for various colours used
 WHITE= (255, 255, 255)
 BLACK= (  0,   0,   0)
 RED = (255,   0,   0)
@@ -51,6 +53,7 @@ dictcolor2={
 512:colorlight,
 1024:colorlight,
 2048:colorlight }
+
 BGCOLOR = LIGHTORANGE
 UP = 'up'
 DOWN = 'down'
@@ -79,7 +82,7 @@ def showStartScreen():
 #the start screen
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
     titleSurf1 = titleFont.render('2048', True, WHITE, ORANGE)
-    drawPressKeyMsg()   
+    drawPressKeyMsg()
 
     while True:
         screen.fill(BGCOLOR)
@@ -174,7 +177,7 @@ def runGame(TABLE):
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
                         show(TABLE)
- 
+
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
         for pi in range(1,4):
@@ -208,13 +211,25 @@ def movedown(pi,pj,T):
             justcomb=True
     return T
 
+def moveright(pi,pj,T):
+    justcomb=False
+    while pj < 3 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
+        if T[pi][pj+1] == 0:
+            T[pi][pj+1] = T[pi][pj]
+            T[pi][pj]=0
+            pj+=1
+        elif T[pi][pj+1]==T[pi][pj]:
+            T[pi][pj+1] += T[pi][pj]
+            T[pi][pj] = 0
+            pj+=1
+            justcomb=True
+    return T
+
 # def moveleft(pi,pj,T):
-    #code for leftwards arrow key
-# def moveright(pi,pj,T):
-    #code for rightwards arrow key
+    #code for upwards arrow key
 # def moveup(pi,pj,T):
     #code for upwards arrow key
-        
+
 def terminate():
     pygame.quit()
     sys.exit()
