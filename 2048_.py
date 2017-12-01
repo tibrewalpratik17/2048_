@@ -208,11 +208,11 @@ def movedown(pi,pj,T):
             justcomb=True
     return T
 
-def moveleft(pi,pj,T):
+# def moveleft(pi,pj,T):
     #code for leftwards arrow key
-def moveright(pi,pj,T):
+# def moveright(pi,pj,T):
     #code for rightwards arrow key
-def moveup(pi,pj,T):
+# def moveup(pi,pj,T):
     #code for upwards arrow key
         
 def terminate():
