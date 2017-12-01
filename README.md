@@ -22,13 +22,10 @@ Here is a brief summary to get you started:
 
 ## Screenshots
 
-<p align="center">
 [![Screenshot_from_2017-12-01_12_43_59.png](https://s2.postimg.org/5tyl7niux/Screenshot_from_2017-12-01_12_43_59.png)](https://postimg.org/image/qe3f64ylx/)
-</p>
 
-<p align="center">
+
 [![Screenshot_from_2017-12-01_12_43_14.png](https://s2.postimg.org/s4mg7pnvt/Screenshot_from_2017-12-01_12_43_14.png)](https://postimg.org/image/a1tdghs11/)
-</p>
 
 ## Issues
 
