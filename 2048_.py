@@ -235,8 +235,8 @@ def moveup(pi,pj,T):
     while pi > 0 and (T[pi-1][pj] == 0 or (T[pi-1][pj] == T[pi][pj] and not justcomb)):
         if T[pi-1][pj] == 0:
             T[pi-1][pj] = T[pi][pj] 
-        elif T[pi+1][pj]==T[pi][pj]:
-            T[pi+1][pj] += T[pi][pj]
+        elif T[pi-1][pj]==T[pi][pj]:
+            T[pi-1][pj] += T[pi][pj]
             justcomb=True
         T[pi][pj]=0
         pi-=1
