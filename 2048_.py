@@ -5,10 +5,11 @@ import copy
 #defining the window size and other different specifications of the window
 FPS = 5
 WINDOWWIDTH = 640
-WINDOWHEIGHT = 640
+WINDOWHEIGHT = 700
 boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4;
 margin = 5
 thickness = 0
+upper_margin=60
 #defining the RGB for various colours used 
 WHITE= (255, 255, 255)
 BLACK= (  0,   0,   0)
@@ -132,32 +133,38 @@ def checkForKeyPress():
         terminate()
     return keyUpEvents[0].key
 
-def show(TABLE):
+def show(TABLE,score):
     #showing the table
     screen.fill(colorback)
     myfont = pygame.font.SysFont("Arial", 100, bold=True)
     for i in range(4):
         for j in range(4):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
-                                              i*boxsize+margin,
+                                              i*boxsize+margin+upper_margin,
                                               boxsize-2*margin,
                                               boxsize-2*margin),
                                               thickness)
             if TABLE[i][j] != 0:
                 label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin))
+                screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin+upper_margin))
+    scoreFont = pygame.font.Font('freesansbold.ttf', 50)
+    scoreSurf = scoreFont.render("Score : " + str(score), True, WHITE, ORANGE)
+    rectangle = scoreSurf.get_rect()
+    rectangle.center = (WINDOWWIDTH / 2, (WINDOWHEIGHT-4*boxsize)/2)
+    screen.blit(scoreSurf, rectangle)
     pygame.display.update()
 
 def runGame(TABLE):
+    score=0
     TABLE=randomfill(TABLE)
     TABLE=randomfill(TABLE)
-    show(TABLE)
+    show(TABLE,score)
     running=True
 
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
-                print "quit"
+                print ("quit")
                 pygame.quit(); sys.exit()
             if event.type == pygame.KEYDOWN:
                 if running:
@@ -170,51 +177,94 @@ def runGame(TABLE):
                     if desired_key is None:
                         continue
 
-                    new_table = key(desired_key, copy.deepcopy(TABLE))
+                    new_table,score = key(desired_key, copy.deepcopy(TABLE),score)
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
-                        show(TABLE)
+                        show(TABLE,score)
  
-def key(DIRECTION,TABLE):
+def key(DIRECTION,TABLE,score):
     if   DIRECTION =='w':
         for pi in range(1,4):
             for pj in range(4):
-                if TABLE[pi][pj] !=0: TABLE=moveup(pi,pj,TABLE)
+                if TABLE[pi][pj] !=0: 
+                    TABLE,added_score=moveup(pi,pj,TABLE)
+                    score+=added_score
     elif DIRECTION =='s':
         for pi in range(2,-1,-1):
             for pj in range(4):
-                if TABLE[pi][pj] !=0: TABLE=movedown(pi,pj,TABLE)
+                if TABLE[pi][pj] !=0: 
+                    TABLE,added_score=movedown(pi,pj,TABLE)
+                    score+=added_score
     elif DIRECTION =='a':
         for pj in range(1,4):
             for pi in range(4):
-                if TABLE[pi][pj] !=0: TABLE=moveleft(pi,pj,TABLE)
+                if TABLE[pi][pj] !=0: 
+                    TABLE,added_score=moveleft(pi,pj,TABLE)
+                    score+=added_score
     elif DIRECTION =='d':
         for pj in range(2,-1,-1):
             for pi in range(4):
-                if TABLE[pi][pj] !=0: TABLE=moveright(pi,pj,TABLE)
-    return TABLE
+                if TABLE[pi][pj] !=0: 
+                    TABLE,added_score=moveright(pi,pj,TABLE)
+                    score+=added_score
+    return TABLE,score
 
 def movedown(pi,pj,T):
     justcomb=False
+    added_score=0
     while pi < 3 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
         if T[pi+1][pj] == 0:
             T[pi+1][pj] = T[pi][pj]
-            T[pi][pj]=0
-            pi+=1
         elif T[pi+1][pj]==T[pi][pj]:
             T[pi+1][pj] += T[pi][pj]
-            T[pi][pj] = 0
-            pi+=1
+            added_score=2*T[pi][pj]
             justcomb=True
-    return T
+        T[pi][pj]=0
+        pi+=1
+    return T,added_score
 
-# def moveleft(pi,pj,T):
-    #code for leftwards arrow key
-# def moveright(pi,pj,T):
-    #code for rightwards arrow key
-# def moveup(pi,pj,T):
-    #code for upwards arrow key
-        
+def moveleft(pi,pj,T):
+    justcomb=False
+    added_score=0
+    while pj > 0  and (T[pi][pj-1] == 0 or (T[pi][pj-1] == T[pi][pj] and not justcomb)):
+        if T[pi][pj-1] == 0:
+            T[pi][pj-1] = T[pi][pj]   
+        elif T[pi][pj-1]==T[pi][pj]:
+            added_score=2*T[pi][pj]
+            T[pi][pj-1] += T[pi][pj]
+            justcomb=True
+        T[pi][pj]=0
+        pj-=1
+    return T,added_score
+
+def moveright(pi,pj,T):
+    justcomb=False
+    added_score=0
+    while pj < 3 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
+        if T[pi][pj+1] == 0:
+            T[pi][pj+1] = T[pi][pj]
+        elif T[pi][pj+1]==T[pi][pj]:
+            added_score=2*T[pi][pj]
+            T[pi][pj+1] += T[pi][pj]
+            justcomb=True
+        T[pi][pj] = 0
+        pj+=1
+    return T,added_score
+
+def moveup(pi,pj,T):
+    justcomb=False
+    added_score=0
+    while pi > 0 and (T[pi-1][pj] == 0 or (T[pi-1][pj] == T[pi][pj] and not justcomb)):
+        if T[pi-1][pj] == 0:
+            T[pi-1][pj] = T[pi][pj] 
+        elif T[pi-1][pj]==T[pi][pj]:
+            added_score=2*T[pi][pj]
+            T[pi-1][pj] += T[pi][pj]
+            justcomb=True
+        T[pi][pj]=0
+        pi-=1
+    return T,added_score
+
 def terminate():
     pygame.quit()
     sys.exit()
