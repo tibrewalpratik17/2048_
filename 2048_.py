@@ -212,8 +212,21 @@ def movedown(pi,pj,T):
     #code for leftwards arrow key
 # def moveright(pi,pj,T):
     #code for rightwards arrow key
-# def moveup(pi,pj,T):
-    #code for upwards arrow key
+def moveup(pi,pj,T):
+    justcomb = False
+    while pi>0 and (T[pi-1][pj]==0 or (T[pi-1][pj] == T[pi][pj])):
+        if T[pi-1][pj] ==0:
+            T[pi-1][pj] = T[pi][pj]
+            T[pi][pj] = 0
+            pi-=1
+        elif T[pi-1][pj] == T[pi][pj] and not justcomb:
+            T[pi-1][pj] += T[pi][pj]
+            T[pi][pj] = 0
+            pi-=1
+            justcomb = True
+        elif T[pi-1][pj] == T[pi][pj] and  justcomb:
+            break
+    return T 
         
 def terminate():
     pygame.quit()
