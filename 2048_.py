@@ -74,8 +74,13 @@ def main():
     showStartScreen()
 
     while True:
-        runGame(TABLE)
-        gameover()
+        status = runGame(TABLE)
+        if status == 0:
+            gameover()
+        else:
+            wingame()
+        break
+
 
 
 def showStartScreen():
@@ -138,7 +143,6 @@ def checkForKeyPress():
 def show(TABLE):
     #showing the table
     screen.fill(colorback)
-    myfont = pygame.font.SysFont("Arial", 100, bold=True)
     for i in range(4):
         for j in range(4):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
@@ -147,7 +151,17 @@ def show(TABLE):
                                               boxsize-2*margin),
                                               thickness)
             if TABLE[i][j] != 0:
-                label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
+                if TABLE[i][j] in range(16, 1024):
+                    myfont = pygame.font.SysFont("Arial", 75, bold=True)
+                    label = myfont.render("%3s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
+                elif TABLE[i][j] in range(1024, 2049):
+                    myfont = pygame.font.SysFont("Arial", 50, bold=True)
+                    label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
+                else:
+                    myfont = pygame.font.SysFont("Arial", 100, bold=True)
+                    label = myfont.render("%2s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
+
+
                 screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin))
     pygame.display.update()
 
@@ -177,6 +191,24 @@ def runGame(TABLE):
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
                         show(TABLE)
+                        for i in range(0, 4):
+                            for j in range(0, 4):
+                                if TABLE[i][j] == 2048:
+                                    return 1
+                    else:
+                        new_table_temp = key("w", copy.deepcopy(TABLE))
+                        if new_table_temp != TABLE:
+                            continue
+                        new_table_temp = key("s", copy.deepcopy(TABLE))
+                        if new_table_temp != TABLE:
+                            continue
+                        new_table_temp = key("a", copy.deepcopy(TABLE))
+                        if new_table_temp != TABLE:
+                            continue
+                        new_table_temp = key("d", copy.deepcopy(TABLE))
+                        if new_table_temp != TABLE:
+                            continue
+                        return 0
 
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
@@ -253,7 +285,45 @@ def moveup(pi,pj,T):
             justcomb=True
     return T
 
+def gameover():
+    titleFont = pygame.font.Font('freesansbold.ttf', 100)
+    titleSurf1 = titleFont.render('GAME OVER', True, WHITE, ORANGE)
+    drawPressKeyMsg()
 
+    while True:
+        screen.fill(BGCOLOR)
+        display_rect = pygame.transform.rotate(titleSurf1, 0)
+        rectangle = display_rect.get_rect()
+        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        screen.blit(display_rect, rectangle)
+
+        drawPressKeyMsg()
+
+        if checkForKeyPress():
+            pygame.event.get()
+            return
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+
+def wingame():
+    titleFont = pygame.font.Font('freesansbold.ttf', 100)
+    titleSurf1 = titleFont.render('WIN GAME', True, WHITE, ORANGE)
+    drawPressKeyMsg()
+
+    while True:
+        screen.fill(BGCOLOR)
+        display_rect = pygame.transform.rotate(titleSurf1, 0)
+        rectangle = display_rect.get_rect()
+        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        screen.blit(display_rect, rectangle)
+
+        drawPressKeyMsg()
+
+        if checkForKeyPress():
+            pygame.event.get()
+            return
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
 
 def terminate():
     pygame.quit()
