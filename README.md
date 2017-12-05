@@ -27,9 +27,13 @@ Here is a brief summary to get you started:
 
 [![Screenshot_from_2017-12-01_12_43_14.png](https://s2.postimg.org/s4mg7pnvt/Screenshot_from_2017-12-01_12_43_14.png)](https://postimg.org/image/a1tdghs11/)
 
+[![Screenshot_from_2017-12-05_15-23-57.png](https://s17.postimg.org/z1loa86i7/Screenshot_from_2017-12-05_15-23-57.png)](https://postimg.org/image/dry1zdq7f/)
+
+[![Screenshot_from_2017-12-05_15-28-22.png](https://s17.postimg.org/961xr1ce7/Screenshot_from_2017-12-05_15-28-22.png)](https://postimg.org/image/qw3mc2pyz/)
+
+[![Screenshot_from_2017-12-05_16-00-19.png](https://s17.postimg.org/w7iiwsjrj/Screenshot_from_2017-12-05_16-00-19.png)](https://postimg.org/image/9itbx82dn/)
 ## Issues
 
-* Complete the code for other moving options `moveup`, `moveright` and `moveleft`. 
 * Make the start screen look more attractive with options for different levels and leaderboard.
 * Make a leaderboard for storing high scores calculated on basis of *Points earned* and *Time taken*.
 * It will be great to implement AI techniques which can provide the player with hints for the next step.
