@@ -288,7 +288,6 @@ def moveup(pi,pj,T):
 def gameover():
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
     titleSurf1 = titleFont.render('GAME OVER', True, WHITE, ORANGE)
-    drawPressKeyMsg()
 
     while True:
         screen.fill(BGCOLOR)
@@ -297,7 +296,6 @@ def gameover():
         rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
         screen.blit(display_rect, rectangle)
 
-        drawPressKeyMsg()
 
         if checkForKeyPress():
             pygame.event.get()
@@ -307,8 +305,7 @@ def gameover():
 
 def wingame():
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
-    titleSurf1 = titleFont.render('WIN GAME', True, WHITE, ORANGE)
-    drawPressKeyMsg()
+    titleSurf1 = titleFont.render('YOU WON', True, WHITE, ORANGE)
 
     while True:
         screen.fill(BGCOLOR)
@@ -317,7 +314,6 @@ def wingame():
         rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
         screen.blit(display_rect, rectangle)
 
-        drawPressKeyMsg()
 
         if checkForKeyPress():
             pygame.event.get()
