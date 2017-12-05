@@ -24,9 +24,6 @@ Here is a brief summary to get you started:
 
 [![Screenshot_from_2017-12-01_12_43_59.png](https://s2.postimg.org/5tyl7niux/Screenshot_from_2017-12-01_12_43_59.png)](https://postimg.org/image/qe3f64ylx/)
 
-
-[![Screenshot_from_2017-12-01_12_43_14.png](https://s2.postimg.org/s4mg7pnvt/Screenshot_from_2017-12-01_12_43_14.png)](https://postimg.org/image/a1tdghs11/)
-
 [![Screenshot_from_2017-12-05_15-23-57.png](https://s17.postimg.org/z1loa86i7/Screenshot_from_2017-12-05_15-23-57.png)](https://postimg.org/image/dry1zdq7f/)
 
 [![Screenshot_from_2017-12-05_15-28-22.png](https://s17.postimg.org/961xr1ce7/Screenshot_from_2017-12-05_15-28-22.png)](https://postimg.org/image/qw3mc2pyz/)
