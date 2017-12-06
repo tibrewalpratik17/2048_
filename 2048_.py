@@ -2,6 +2,7 @@ import random, pygame, sys
 from pygame.locals import *
 from random import randint
 import copy
+import splash_screen
 #defining the window size and other different specifications of the window
 FPS = 5
 WINDOWWIDTH = 640
@@ -76,25 +77,7 @@ def main():
 
 
 def showStartScreen():
-#the start screen
-    titleFont = pygame.font.Font('freesansbold.ttf', 100)
-    titleSurf1 = titleFont.render('2048', True, WHITE, ORANGE)
-    drawPressKeyMsg()   
-
-    while True:
-        screen.fill(BGCOLOR)
-        display_rect = pygame.transform.rotate(titleSurf1, 0)
-        rectangle = display_rect.get_rect()
-        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
-        screen.blit(display_rect, rectangle)
-
-        drawPressKeyMsg()
-
-        if checkForKeyPress():
-            pygame.event.get()
-            return
-        pygame.display.update()
-        FPSCLOCK.tick(FPS)
+    splash_screen
 
 def randomfill(TABLE):
     # search for zero in the game table and randomly fill the places
