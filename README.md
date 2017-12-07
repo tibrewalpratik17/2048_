@@ -22,10 +22,13 @@ Here is a brief summary to get you started:
 * `moveUp` function is defined for the actions to be undertaken when the upward key is pressed
 * `moveRight` function is defined for the actions to be undertaken when the right key is pressed
 * `moveLeft` function is defined for the actions to be undertaken when the left key is pressed
+* `createButton` function is used to create a new button
+* `gameOver()` return true if no further move is possible
+* `showGameOverMessage` funtion is defined to display game over screen
 
 ## Screenshots
 
-[![Screenshot_from_2017-12-01_12_43_59.png](https://s2.postimg.org/5tyl7niux/Screenshot_from_2017-12-01_12_43_59.png)](https://postimg.org/image/qe3f64ylx/)
+[![Screenshot_from_2017-12-08_00-39-42.png](https://s2.postimg.org/41ek94sbt/Screenshot_from_2017-12-08_00-39-42.png)](https://postimg.org/image/bu5813yat/)
 
 
 [![Screenshot_from_2017-12-04_19-39-27.png](https://s7.postimg.org/sea0arqsr/Screenshot_from_2017-12-04_19-39-27.png)](https://postimg.org/image/e7u9fjfxj/)

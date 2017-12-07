@@ -20,6 +20,8 @@ LIGHTSALMON=(255, 160, 122)
 ORANGE=(221, 118, 7)
 LIGHTORANGE=(227,155,78)
 CORAL=(255, 127, 80)
+BLUE = (0, 0, 255)
+LIGHTBLUE = (0, 0, 150)
 colorback=(189,174,158)
 colorblank=(205,193,180)
 colorlight=(249,246,242)
@@ -37,7 +39,9 @@ dictcolor1={
 256:(237,204,97),
 512:(237,200,80),
 1024:(237,197,63),
-2048:(237,194,46) }
+2048:(237,194,46),
+4096:(237,190,30),
+8192:(239,180,25) }
 
 dictcolor2={
 2:colordark,
@@ -50,7 +54,9 @@ dictcolor2={
 256:colorlight,
 512:colorlight,
 1024:colorlight,
-2048:colorlight }
+2048:colorlight,
+4096:colorlight,
+8192:colorlight }
 BGCOLOR = LIGHTORANGE
 UP = 'up'
 DOWN = 'down'
@@ -75,6 +81,23 @@ def main():
         gameover()
 
 
+def createButton(text, x, y, width, height, action=None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    if x+width > mouse[0] > x and y+height > mouse[1] > y:
+        pygame.draw.rect(screen, LIGHTBLUE, (x,y,width,height))
+        if click[0] == 1 and action != None:
+            action()
+    else:
+        pygame.draw.rect(screen, BLUE, (x,y,width,height))
+
+    smallText = pygame.font.Font('freesansbold.ttf',50)
+    TextSurf = smallText.render(text,True,WHITE)
+    TextRect = TextSurf.get_rect()
+    TextRect.center = ((x+(width/2)),(y+(height/2)))
+    screen.blit(TextSurf, TextRect)
+
+
 def showStartScreen():
 #the start screen
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
@@ -85,9 +108,12 @@ def showStartScreen():
         screen.fill(BGCOLOR)
         display_rect = pygame.transform.rotate(titleSurf1, 0)
         rectangle = display_rect.get_rect()
-        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT/8)
         screen.blit(display_rect, rectangle)
 
+        createButton("NEW GAME", 80, 180, 480, 80, newGame)
+        createButton("HIGHSCORE", 80, 340, 480, 80, leaderboard)
+        createButton("QUIT", 80, 500, 480, 80, terminate)
         drawPressKeyMsg()
 
         if checkForKeyPress():
@@ -95,6 +121,9 @@ def showStartScreen():
             return
         pygame.display.update()
         FPSCLOCK.tick(FPS)
+
+def newGame():
+    runGame(TABLE)
 
 def randomfill(TABLE):
     # search for zero in the game table and randomly fill the places
@@ -113,6 +142,46 @@ def randomfill(TABLE):
     else:
         TABLE[w//4][w%4] = 2
     return TABLE
+
+def gameOver(TABLE):
+    # returns False if a box is empty or two boxes can be merged
+    x = [-1, 0, 1, 0 ]
+    y = [0 , 1, 0, -1]
+    for pi in range(4):
+        for pj in range(4):
+            if TABLE[pi][pj] == 0:
+                return False
+            for point in range(4):
+                if pi+x[point] > -1 and pi+x[point] < 4 and pj+y[point] > -1 and pj+y[point] < 4 and TABLE[pi][pj] == TABLE[pi+x[point]][pj+y[point]]:
+                    return False
+    return True
+
+def showGameOverMessage():
+# to show game over screen
+    titleFont = pygame.font.Font('freesansbold.ttf', 60)
+    titleSurf1 = titleFont.render('Game Over', True, WHITE, ORANGE)
+    showMainMenu()
+
+    while True:
+        screen.fill(BGCOLOR)
+        display_rect = pygame.transform.rotate(titleSurf1, 0)
+        rectangle = display_rect.get_rect()
+        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        screen.blit(display_rect, rectangle)
+
+        showMainMenu()
+        pygame.display.update()
+        if checkForKeyPress():
+            if len(pygame.event.get()) > 0:
+                main()
+        FPSCLOCK.tick(FPS)
+
+def showMainMenu():
+# to display main menu
+    pressKeySurf = BASICFONT.render('Press a key for main menu', True, WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (WINDOWWIDTH - 250, WINDOWHEIGHT - 30)
+    screen.blit(pressKeySurf, pressKeyRect)
 
 def drawPressKeyMsg():
     pressKeySurf = BASICFONT.render('Press a key to play', True, WHITE)
@@ -175,6 +244,8 @@ def runGame(TABLE):
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
                         show(TABLE)
+                    if gameOver(TABLE):
+                        showGameOverMessage()
 
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
@@ -251,6 +322,8 @@ def moveup(pi,pj,T):
             justcomb = True
     return T
 
+def leaderboard():
+    s = 'to show leaderboard'
 
 def terminate():
     pygame.quit()
