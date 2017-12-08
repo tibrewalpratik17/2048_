@@ -135,7 +135,7 @@ def checkForKeyPress():
 def show(TABLE):
     #showing the table
     screen.fill(colorback)
-    myfont = pygame.font.SysFont("Arial", 100, bold=True)
+    #myfont = pygame.font.SysFont("Arial", 100, bold=True)
     for i in range(4):
         for j in range(4):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
@@ -144,8 +144,21 @@ def show(TABLE):
                                               boxsize-2*margin),
                                               thickness)
             if TABLE[i][j] != 0:
-                label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin))
+                size=100
+                #k=
+                if(TABLE[i][j]<10):
+                    size=100
+                elif   TABLE[i][j]<100:
+                    size=90
+                elif TABLE[i][j]<1000:
+                    size=80
+                else:
+                    size=70        
+                myfont = pygame.font.SysFont("Arial", size, bold=True)
+                label = myfont.render("%s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
+                rect=label.get_rect()
+                screen.blit(label, (j*boxsize+(boxsize-rect.width)/2, i*boxsize+(boxsize-rect.height)/2))
+    pygame.time.wait(150)            
     pygame.display.update()
 
 def runGame(TABLE):
@@ -171,9 +184,13 @@ def runGame(TABLE):
                         continue
 
                     new_table = key(desired_key, copy.deepcopy(TABLE))
+                    check_for_win(new_table)
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
                         show(TABLE)
+                        check_table=copy.deepcopy(TABLE)
+                        if key("w",check_table) == TABLE and key("s",check_table) == TABLE and key("a",check_table)==TABLE and key("d",check_table)==TABLE:
+                            showEndScreen(0)
  
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
@@ -247,7 +264,33 @@ def moveup(pi,pj,T):
             pi-=1
             justcomb=True
     return T
+
+def showEndScreen(flag):
+    titleFont = pygame.font.Font('freesansbold.ttf', 100)
+    titleSurf1 = titleFont.render('Game Over',True, WHITE, ORANGE)
+    titleSurf2 = titleFont.render('You Win',True,WHITE,ORANGE)
+    while True:
+        screen.fill(BGCOLOR)
+        if flag==0:
+            display_rect = pygame.transform.rotate(titleSurf1, 0)
+        else:
+            display_rect = pygame.transform.rotate(titleSurf2, 0)  
+        rectangle = display_rect.get_rect()
+        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        screen.blit(display_rect, rectangle)
+        pygame.time.wait(1000)   
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                terminate()
         
+def check_for_win(new_table):
+    for i in range(0,4):
+        for j in range(0,4):
+            if new_table[i][j]==2048:
+                showEndScreen(1)
+
+
 def terminate():
     pygame.quit()
     sys.exit()
