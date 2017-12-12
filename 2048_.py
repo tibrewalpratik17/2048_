@@ -169,9 +169,13 @@ def runGame(TABLE):
                     if event.key == pygame.K_DOWN  : desired_key = "s"
                     if event.key == pygame.K_LEFT  : desired_key = "a"
                     if event.key == pygame.K_RIGHT : desired_key = "d"
+                    
                     if event.key == pygame.K_BACKSPACE:
                         # print "back"
                         back(TABLE)
+                    if event.key == pygame.K_ESCAPE:
+                        terminate()
+
                     if desired_key is None:
                         continue
 
