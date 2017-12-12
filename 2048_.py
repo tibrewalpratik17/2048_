@@ -2,6 +2,7 @@ import random, pygame, sys
 from pygame.locals import *
 from random import randint
 import copy
+import inputbox
 #defining the window size and other different specifications of the window
 FPS = 5
 WINDOWWIDTH = 640
@@ -58,6 +59,7 @@ LEFT = 'left'
 RIGHT = 'right'
 
 TABLE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+PREVTABLE = TABLE
 
 def main():
     global FPSCLOCK, screen, BASICFONT
@@ -149,6 +151,7 @@ def show(TABLE):
     pygame.display.update()
 
 def runGame(TABLE):
+    global PREVTABLE
     TABLE=randomfill(TABLE)
     TABLE=randomfill(TABLE)
     show(TABLE)
@@ -166,16 +169,29 @@ def runGame(TABLE):
                     if event.key == pygame.K_DOWN  : desired_key = "s"
                     if event.key == pygame.K_LEFT  : desired_key = "a"
                     if event.key == pygame.K_RIGHT : desired_key = "d"
-
+                    if event.key == pygame.K_BACKSPACE:
+                        # print "back"
+                        back(TABLE)
                     if desired_key is None:
                         continue
 
                     new_table = key(desired_key, copy.deepcopy(TABLE))
+                    PREVTABLE = TABLE
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
                         show(TABLE)
+
  
+def back(TABLE):
+    global PREVTABLE
+    TEMP = TABLE
+    TABLE = PREVTABLE
+    PREVTABLE = TEMP
+    # print TABLE
+    show(TABLE)
+
 def key(DIRECTION,TABLE):
+    global PREVTABLE
     if   DIRECTION =='w':
         for pi in range(1,4):
             for pj in range(4):
