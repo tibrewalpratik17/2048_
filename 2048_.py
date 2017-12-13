@@ -7,7 +7,7 @@ import inputbox
 FPS = 5
 WINDOWWIDTH = 640
 WINDOWHEIGHT = 640
-boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4;
+# boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4;
 margin = 5
 thickness = 0
 #defining the RGB for various colours used 
@@ -57,13 +57,15 @@ UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
-
-TABLE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+n=1
+TABLE = [[0,0,0,0]]*n
+# TABLE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 PREVTABLE = TABLE
 
 def main():
     global FPSCLOCK, screen, BASICFONT
-
+    global n
+    global PREVTABLE
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -71,16 +73,33 @@ def main():
     pygame.display.set_caption('2048')
 
     showStartScreen()
-
+    TABLE = createTable()
+    # TABLE = [[0,0,0,0]]*n
+    PREVTABLE = TABLE
+    # print TABLE
     while True:
         runGame(TABLE)
         gameover()
 
+def createTable():
+    global n
+    TABLE = [[0 for x in range(n)] for y in range(n)]  
+    # print TABLE
+    return TABLE   
 
 def showStartScreen():
 #the start screen
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
     titleSurf1 = titleFont.render('2048', True, WHITE, ORANGE)
+    global n
+    global boxsize
+    message = 'Enter level(n*n) from 2 to n'
+    while(n<2):
+        n = int(inputbox.ask(screen,message))
+        if(n<2):
+            message = "Enter value more than 2"
+            print "n<2"
+    boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//n
     drawPressKeyMsg()   
 
     while True:
@@ -100,20 +119,22 @@ def showStartScreen():
 
 def randomfill(TABLE):
     # search for zero in the game table and randomly fill the places
+    global n
     flatTABLE = sum(TABLE,[])
     if 0 not in flatTABLE:
         return TABLE
     empty=False
     w=0
     while not empty:
-        w=randint(0,15)
-        if TABLE[w//4][w%4] == 0:
+        w=randint(0,(n*n)-1)
+        if TABLE[w//n][w%n] == 0:
             empty=True
     z=randint(1,5)
     if z==5:
-        TABLE[w//4][w%4] = 4
+        TABLE[w//n][w%n] = 4
     else:
-        TABLE[w//4][w%4] = 2
+        TABLE[w//n][w%n] = 2
+    # print TABLE
     return TABLE
 
 def drawPressKeyMsg():
@@ -136,10 +157,12 @@ def checkForKeyPress():
 
 def show(TABLE):
     #showing the table
+    global n
+    global boxsize
     screen.fill(colorback)
     myfont = pygame.font.SysFont("Arial", 100, bold=True)
-    for i in range(4):
-        for j in range(4):
+    for i in range(n):
+        for j in range(n):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
                                               i*boxsize+margin,
                                               boxsize-2*margin,
@@ -153,7 +176,7 @@ def show(TABLE):
 def runGame(TABLE):
     global PREVTABLE
     TABLE=randomfill(TABLE)
-    TABLE=randomfill(TABLE)
+    # TABLE=randomfill(TABLE)
     show(TABLE)
     running=True
 
@@ -196,27 +219,28 @@ def back(TABLE):
 
 def key(DIRECTION,TABLE):
     global PREVTABLE
+    global n
     if   DIRECTION =='w':
-        for pi in range(1,4):
-            for pj in range(4):
+        for pi in range(1,n):
+            for pj in range(n):
                 if TABLE[pi][pj] !=0: TABLE=moveup(pi,pj,TABLE)
     elif DIRECTION =='s':
-        for pi in range(2,-1,-1):
-            for pj in range(4):
+        for pi in range(n-2,-1,-1):
+            for pj in range(n):
                 if TABLE[pi][pj] !=0: TABLE=movedown(pi,pj,TABLE)
     elif DIRECTION =='a':
-        for pj in range(1,4):
-            for pi in range(4):
+        for pj in range(1,n):
+            for pi in range(n):
                 if TABLE[pi][pj] !=0: TABLE=moveleft(pi,pj,TABLE)
     elif DIRECTION =='d':
-        for pj in range(2,-1,-1):
-            for pi in range(4):
+        for pj in range(n-2,-1,-1):
+            for pi in range(n):
                 if TABLE[pi][pj] !=0: TABLE=moveright(pi,pj,TABLE)
     return TABLE
 
 def movedown(pi,pj,T):
     justcomb=False
-    while pi < 3 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
+    while pi < n-1 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
         if T[pi+1][pj] == 0:
             T[pi+1][pj] = T[pi][pj]
             T[pi][pj]=0
@@ -245,7 +269,7 @@ def moveleft(pi,pj,T):
 def moveright(pi,pj,T):
     #code for rightwards arrow key
     justcomb=False
-    while pj < 3  and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
+    while pj < n-1  and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
         if T[pi][pj+1] == 0:
             T[pi][pj+1] = T[pi][pj]
             T[pi][pj]=0
