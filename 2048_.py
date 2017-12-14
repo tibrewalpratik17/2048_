@@ -2,11 +2,11 @@ import random, pygame, sys
 from pygame.locals import *
 from random import randint
 import copy
+import math
 #defining the window size and other different specifications of the window
 FPS = 5
 WINDOWWIDTH = 640
 WINDOWHEIGHT = 640
-boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4;
 margin = 5
 thickness = 0
 #defining the RGB for various colours used 
@@ -56,12 +56,12 @@ UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
-
-TABLE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+LEVEL = 0
+boxsize = 0
+TABLE = [[]]
 
 def main():
     global FPSCLOCK, screen, BASICFONT
-
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -104,23 +104,26 @@ def randomfill(TABLE):
     empty=False
     w=0
     while not empty:
-        w=randint(0,15)
-        if TABLE[w//4][w%4] == 0:
+        w=randint(0,LEVEL*LEVEL-1)
+        if TABLE[w//LEVEL][w%LEVEL] == 0:
             empty=True
     z=randint(1,5)
     if z==5:
-        TABLE[w//4][w%4] = 4
+        TABLE[w//LEVEL][w%LEVEL] = 4
     else:
-        TABLE[w//4][w%4] = 2
+        TABLE[w//LEVEL][w%LEVEL] = 2
     return TABLE
 
 def drawPressKeyMsg():
-    pressKeySurf = BASICFONT.render('Press a key to play', True, WHITE)
+    pressKeySurf = BASICFONT.render('Enter the level you want to play ( 3 - 7 )', True, WHITE)
     pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
+    pressKeyRect.topleft = (5, WINDOWHEIGHT - 30)
     screen.blit(pressKeySurf, pressKeyRect)
 
 def checkForKeyPress():
+
+    global LEVEL,boxsize, TABLE
+
     #checking if a key is pressed or not
     if len(pygame.event.get(QUIT)) > 0:
         terminate()
@@ -128,6 +131,21 @@ def checkForKeyPress():
     keyUpEvents = pygame.event.get(KEYUP)
     if len(keyUpEvents) == 0:
         return None
+
+    keyDownEvents = pygame.event.get(KEYDOWN)
+   
+    LEVEL = 3
+
+    for event in keyDownEvents :
+        try:
+            LEVEL = int(event.unicode)
+        except Exception as e:
+            print('Non-numeric data entered')
+            LEVEL = 3
+
+    boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//LEVEL;
+    TABLE = [[0 for x in range(LEVEL)] for y in range(LEVEL)]
+
     if keyUpEvents[0].key == K_ESCAPE:
         terminate()
     return keyUpEvents[0].key
@@ -136,15 +154,15 @@ def show(TABLE):
     #showing the table
     screen.fill(colorback)
     myfont = pygame.font.SysFont("Arial", 100, bold=True)
-    for i in range(4):
-        for j in range(4):
+    for i in range(LEVEL):
+        for j in range(LEVEL):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
                                               i*boxsize+margin,
                                               boxsize-2*margin,
                                               boxsize-2*margin),
                                               thickness)
             if TABLE[i][j] != 0:
-                label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
+                label = myfont.render("%s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
                 screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin))
     pygame.display.update()
 
@@ -157,7 +175,7 @@ def runGame(TABLE):
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
-                print "quit"
+                print ("quit")
                 pygame.quit(); sys.exit()
             if event.type == pygame.KEYDOWN:
                 if running:
@@ -177,26 +195,26 @@ def runGame(TABLE):
  
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
-        for pi in range(1,4):
-            for pj in range(4):
+        for pi in range(1,LEVEL):
+            for pj in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=moveup(pi,pj,TABLE)
     elif DIRECTION =='s':
-        for pi in range(2,-1,-1):
-            for pj in range(4):
+        for pi in range(LEVEL-2,-1,-1):
+            for pj in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=movedown(pi,pj,TABLE)
     elif DIRECTION =='a':
-        for pj in range(1,4):
-            for pi in range(4):
+        for pj in range(1,LEVEL):
+            for pi in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=moveleft(pi,pj,TABLE)
     elif DIRECTION =='d':
-        for pj in range(2,-1,-1):
-            for pi in range(4):
+        for pj in range(LEVEL-2,-1,-1):
+            for pi in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=moveright(pi,pj,TABLE)
     return TABLE
 
 def movedown(pi,pj,T):
     justcomb=False
-    while pi < 3 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
+    while pi < LEVEL-1 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
         if T[pi+1][pj] == 0:
             T[pi+1][pj] = T[pi][pj]
             T[pi][pj]=0
@@ -224,7 +242,7 @@ def moveleft(pi,pj,T):
 
 def moveright(pi,pj,T):
     justcomb=False
-    while pj < 3 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj+1] and not justcomb)):
+    while pj < LEVEL-1 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj+1] and not justcomb)):
         if T[pi][pj+1] == 0:
             T[pi][pj+1] = T[pi][pj]
             T[pi][pj]=0
