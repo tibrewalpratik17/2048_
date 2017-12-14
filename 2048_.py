@@ -59,6 +59,7 @@ RIGHT = 'right'
 LEVEL = 0
 boxsize = 0
 TABLE = [[]]
+backupTABLE = [[]]
 
 def main():
     global FPSCLOCK, screen, BASICFONT
@@ -170,7 +171,9 @@ def runGame(TABLE):
     TABLE=randomfill(TABLE)
     TABLE=randomfill(TABLE)
     show(TABLE)
+    backupTABLE = TABLE
     running=True
+    backspaceOnceHit = True
 
     while True:
         for event in pygame.event.get():
@@ -184,12 +187,22 @@ def runGame(TABLE):
                     if event.key == pygame.K_DOWN  : desired_key = "s"
                     if event.key == pygame.K_LEFT  : desired_key = "a"
                     if event.key == pygame.K_RIGHT : desired_key = "d"
+                    if event.key == pygame.K_BACKSPACE: desired_key = "backspace"
+
+                    if desired_key is "backspace":
+                        if not backspaceOnceHit:
+                            TABLE = backupTABLE
+                            backspaceOnceHit = True
+                            show(TABLE)
+                        continue
 
                     if desired_key is None:
                         continue
 
                     new_table = key(desired_key, copy.deepcopy(TABLE))
                     if new_table != TABLE:
+                        backspaceOnceHit = False
+                        backupTABLE = TABLE
                         TABLE=randomfill(new_table)
                         show(TABLE)
  
