@@ -2,7 +2,7 @@ import random, pygame, sys
 from pygame.locals import *
 from random import randint
 import copy
-import math
+import shelve
 #defining the window size and other different specifications of the window
 FPS = 5
 WINDOWWIDTH = 640
@@ -57,12 +57,21 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 LEVEL = 0
-boxsize = 0
+boxsize = 100
 TABLE = [[]]
 backupTABLE = [[]]
-
+Score = 0
+highScore = 0
 def main():
-    global FPSCLOCK, screen, BASICFONT
+    global FPSCLOCK, screen, BASICFONT, highScore
+    highScoreStorage = shelve.open('score.txt')
+    try:
+        highScore = highScoreStorage['highscore']
+    except Exception as e:
+        print ('Could not fetch highScore from storage')
+        highScore = 0
+        
+    highScoreStorage.close()
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -144,7 +153,7 @@ def checkForKeyPress():
             print('Non-numeric data entered')
             LEVEL = 3
 
-    boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//LEVEL;
+    # boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//LEVEL;
     TABLE = [[0 for x in range(LEVEL)] for y in range(LEVEL)]
 
     if keyUpEvents[0].key == K_ESCAPE:
@@ -164,10 +173,17 @@ def show(TABLE):
                                               thickness)
             if TABLE[i][j] != 0:
                 label = myfont.render("%s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin))
+                screen.blit(label, (j*boxsize+margin, i*boxsize+margin))
+
+    myfont = pygame.font.SysFont("Arial", 50)
+    label = myfont.render('Score '+str(Score), 1, RED,WHITE )
+    screen.blit(label, (0, LEVEL*boxsize+2*margin))
+    label = myfont.render('High Score '+str(highScore), 1, RED,WHITE )
+    screen.blit(label, (0, 50 + LEVEL*boxsize+4*margin))
     pygame.display.update()
 
 def runGame(TABLE):
+    global Score, highScore
     TABLE=randomfill(TABLE)
     TABLE=randomfill(TABLE)
     show(TABLE)
@@ -200,6 +216,12 @@ def runGame(TABLE):
                         continue
 
                     new_table = key(desired_key, copy.deepcopy(TABLE))
+                    if Score > highScore :
+                        highScore = Score
+                        highScoreStorage = shelve.open('score.txt')
+                        highScoreStorage['highscore'] = highScore
+                        highScoreStorage.close()
+
                     if new_table != TABLE:
                         backspaceOnceHit = False
                         backupTABLE = TABLE
@@ -226,6 +248,7 @@ def key(DIRECTION,TABLE):
     return TABLE
 
 def movedown(pi,pj,T):
+    global Score
     justcomb=False
     while pi < LEVEL-1 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
         if T[pi+1][pj] == 0:
@@ -234,12 +257,14 @@ def movedown(pi,pj,T):
             pi+=1
         elif T[pi+1][pj]==T[pi][pj]:
             T[pi+1][pj] += T[pi][pj]
+            Score += T[pi+1][pj]
             T[pi][pj] = 0
             pi+=1
             justcomb=True
     return T
 
 def moveleft(pi,pj,T):
+    global Score
     justcomb=False
     while pj > 0 and (T[pi][pj-1] == 0 or (T[pi][pj-1] == T[pi][pj-1] and not justcomb)):
         if T[pi][pj-1] == 0:
@@ -248,12 +273,14 @@ def moveleft(pi,pj,T):
             pj-=1
         elif T[pi][pj-1]==T[pi][pj]:
             T[pi][pj-1] += T[pi][pj]
+            Score += T[pi][pj-1]
             T[pi][pj] = 0
             pj-=1
             justcomb=True
     return T
 
 def moveright(pi,pj,T):
+    global Score
     justcomb=False
     while pj < LEVEL-1 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj+1] and not justcomb)):
         if T[pi][pj+1] == 0:
@@ -262,12 +289,14 @@ def moveright(pi,pj,T):
             pj+=1
         elif T[pi][pj+1]==T[pi][pj]:
             T[pi][pj+1] += T[pi][pj]
+            Score += T[pi][pj+1]
             T[pi][pj] = 0
             pj+=1
             justcomb=True
     return T
 
 def moveup(pi,pj,T):
+    global Score
     justcomb=False
     while pi > 0 and (T[pi-1][pj] == 0 or (T[pi-1][pj] == T[pi][pj] and not justcomb)):
         if T[pi-1][pj] == 0:
@@ -276,6 +305,7 @@ def moveup(pi,pj,T):
             pi-=1
         elif T[pi-1][pj]==T[pi][pj]:
             T[pi-1][pj] += T[pi][pj]
+            Score += T[pi-1][pj]
             T[pi][pj] = 0
             pi-=1
             justcomb=True
