@@ -21,21 +21,14 @@ Here is a brief summary to get you started:
 * `moveDown` function is defined for the actions to be undertaken when the downward key is pressed.
 
 ## Screenshots
+![2017-12-14](https://user-images.githubusercontent.com/16771666/33991606-333daa2a-e0f5-11e7-9cf0-885904297f58.png)
 
-[![Screenshot_from_2017-12-01_12_43_59.png](https://s2.postimg.org/5tyl7niux/Screenshot_from_2017-12-01_12_43_59.png)](https://postimg.org/image/qe3f64ylx/)
+Enter the LEVEL number (between 3 and 7)
 
+![2017-12-14 2](https://user-images.githubusercontent.com/16771666/33991601-2cee778a-e0f5-11e7-9f93-639075cc93da.png)
 
-[![Screenshot_from_2017-12-01_12_43_14.png](https://s2.postimg.org/s4mg7pnvt/Screenshot_from_2017-12-01_12_43_14.png)](https://postimg.org/image/a1tdghs11/)
+![2017-12-14 1](https://user-images.githubusercontent.com/16771666/33991574-17ce934e-e0f5-11e7-90bc-b2d251e36a59.png)
 
-## Issues
-
-* Complete the code for other moving options `moveup`, `moveright` and `moveleft`. 
-* Make the start screen look more attractive with options for different levels and leaderboard.
-* Make a leaderboard for storing high scores calculated on basis of *Points earned* and *Time taken*.
-* It will be great to implement AI techniques which can provide the player with hints for the next step.
-
-## Contributing
-
-Any contributions are more than welcome. Just **fork** the repo and start contributing. 
+Use backspace Key to Undo a move.
 
 
