@@ -135,7 +135,7 @@ def checkForKeyPress():
 def show(TABLE):
     #showing the table
     screen.fill(colorback)
-    myfont = pygame.font.SysFont("Arial", 100, bold=True)
+    myfont = pygame.font.SysFont("Arial", 60, bold=True)
     for i in range(4):
         for j in range(4):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
@@ -145,7 +145,7 @@ def show(TABLE):
                                               thickness)
             if TABLE[i][j] != 0:
                 label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin))
+                screen.blit(label, (j*boxsize+4*margin-2*margin, boxsize/6+i*boxsize+5*margin))
     pygame.display.update()
 
 def runGame(TABLE):
@@ -157,8 +157,8 @@ def runGame(TABLE):
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
-                print "quit"
-                pygame.quit(); sys.exit()
+                terminate()
+                
             if event.type == pygame.KEYDOWN:
                 if running:
                     desired_key = None
@@ -251,6 +251,7 @@ def moveup(pi,pj,T):
     return T
 
 def terminate():
+    print "quit"
     pygame.quit()
     sys.exit()
 
