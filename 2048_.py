@@ -3,12 +3,13 @@ from pygame.locals import *
 from random import randint
 import copy
 #defining the window size and other different specifications of the window
+LEVEL = 4
+WINDOWWIDTH = 114*LEVEL
+WINDOWHEIGHT = 114*LEVEL
 FPS = 5
-WINDOWWIDTH = 640
-WINDOWHEIGHT = 640
-boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4;
 margin = 5
 thickness = 0
+boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4
 #defining the RGB for various colours used 
 WHITE= (255, 255, 255)
 BLACK= (  0,   0,   0)
@@ -51,16 +52,17 @@ dictcolor2={
 512:colorlight,
 1024:colorlight,
 2048:colorlight }
+
 BGCOLOR = LIGHTORANGE
 UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
-TABLE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+TABLE=[[0 for _ in range(4)] for _ in range(4)]
 
 def main():
-    global FPSCLOCK, screen, BASICFONT
+    global FPSCLOCK, screen, BASICFONT, running
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
@@ -85,7 +87,7 @@ def showStartScreen():
         screen.fill(BGCOLOR)
         display_rect = pygame.transform.rotate(titleSurf1, 0)
         rectangle = display_rect.get_rect()
-        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        rectangle.center = (WINDOWWIDTH/2, WINDOWHEIGHT/2)
         screen.blit(display_rect, rectangle)
 
         drawPressKeyMsg()
@@ -104,40 +106,59 @@ def randomfill(TABLE):
     empty=False
     w=0
     while not empty:
-        w=randint(0,15)
-        if TABLE[w//4][w%4] == 0:
+        w=randint(0,LEVEL*LEVEL-1)
+        if TABLE[w//LEVEL][w%LEVEL] == 0:
             empty=True
     z=randint(1,5)
     if z==5:
-        TABLE[w//4][w%4] = 4
+        TABLE[w//LEVEL][w%LEVEL] = 4
     else:
-        TABLE[w//4][w%4] = 2
+        TABLE[w//LEVEL][w%LEVEL] = 2
     return TABLE
 
 def drawPressKeyMsg():
-    pressKeySurf = BASICFONT.render('Press a key to play', True, WHITE)
+    pressKeySurf = BASICFONT.render("Choose game level : (E)asy, (M)edium, (H)ard", True, WHITE)
     pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
+    pressKeyRect.topleft = (10, WINDOWHEIGHT - 30)
     screen.blit(pressKeySurf, pressKeyRect)
 
 def checkForKeyPress():
     #checking if a key is pressed or not
+    global LEVEL, WINDOWWIDTH, WINDOWHEIGHT, boxsize, screen, TABLE
+
     if len(pygame.event.get(QUIT)) > 0:
         terminate()
 
     keyUpEvents = pygame.event.get(KEYUP)
     if len(keyUpEvents) == 0:
         return None
+        
     if keyUpEvents[0].key == K_ESCAPE:
         terminate()
+        
+    if keyUpEvents[0].key == K_e:
+    	LEVEL = 4
+    	
+    if keyUpEvents[0].key == K_m:
+    	LEVEL = 5
+    	
+    if keyUpEvents[0].key == K_h:
+    	LEVEL = 6
+    	
+    WINDOWWIDTH = 114*LEVEL
+    WINDOWHEIGHT = 114*LEVEL
+    boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//(LEVEL)
+    screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    TABLE=[[0 for _ in range(LEVEL)] for _ in range(LEVEL)]
+    
     return keyUpEvents[0].key
-
+    
 def show(TABLE):
     #showing the table
     screen.fill(colorback)
-    myfont = pygame.font.SysFont("Arial", 60, bold=True)
-    for i in range(4):
-        for j in range(4):
+    myfont = pygame.font.SysFont("Arial", 40, bold=True)
+    for i in range(LEVEL):
+        for j in range(LEVEL):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
                                               i*boxsize+margin,
                                               boxsize-2*margin,
@@ -145,7 +166,7 @@ def show(TABLE):
                                               thickness)
             if TABLE[i][j] != 0:
                 label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+4*margin-2*margin, boxsize/6+i*boxsize+5*margin))
+                screen.blit(label, (j*boxsize+LEVEL*margin-2*margin, boxsize/6+i*boxsize+5*margin))
     pygame.display.update()
 
 def runGame(TABLE):
@@ -177,26 +198,26 @@ def runGame(TABLE):
  
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
-        for pi in range(1,4):
-            for pj in range(4):
+        for pi in range(1,LEVEL):
+            for pj in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=moveup(pi,pj,TABLE)
     elif DIRECTION =='s':
         for pi in range(2,-1,-1):
-            for pj in range(4):
+            for pj in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=movedown(pi,pj,TABLE)
     elif DIRECTION =='a':
-        for pj in range(1,4):
-            for pi in range(4):
+        for pj in range(1,LEVEL):
+            for pi in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=moveleft(pi,pj,TABLE)
     elif DIRECTION =='d':
         for pj in range(2,-1,-1):
-            for pi in range(4):
+            for pi in range(LEVEL):
                 if TABLE[pi][pj] !=0: TABLE=moveright(pi,pj,TABLE)
     return TABLE
 
 def movedown(pi,pj,T):
     justcomb=False
-    while pi < 3 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
+    while pi < LEVEL-1 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
         if T[pi+1][pj] == 0:
             T[pi+1][pj] = T[pi][pj]
             T[pi][pj]=0
@@ -210,7 +231,7 @@ def movedown(pi,pj,T):
     
 def moveleft(pi,pj,T):
     justcomb=False
-    while pj < 3 and (T[pi][pj-1] == 0 or (T[pi][pj-1] == T[pi][pj] and not justcomb)):
+    while pj < LEVEL-1 and (T[pi][pj-1] == 0 or (T[pi][pj-1] == T[pi][pj] and not justcomb)):
         if T[pi][pj-1] == 0:
             T[pi][pj-1] = T[pi][pj]
             T[pi][pj]=0
@@ -224,7 +245,7 @@ def moveleft(pi,pj,T):
     
 def moveright(pi,pj,T):
     justcomb=False
-    while pj < 3 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
+    while pj < LEVEL-1 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
         if T[pi][pj+1] == 0:
             T[pi][pj+1] = T[pi][pj]
             T[pi][pj]=0
@@ -238,7 +259,7 @@ def moveright(pi,pj,T):
     
 def moveup(pi,pj,T):
     justcomb=False
-    while pi < 3 and (T[pi-1][pj] == 0 or (T[pi-1][pj] == T[pi][pj] and not justcomb)):
+    while pi < LEVEL-1 and (T[pi-1][pj] == 0 or (T[pi-1][pj] == T[pi][pj] and not justcomb)):
         if T[pi-1][pj] == 0:
             T[pi-1][pj] = T[pi][pj]
             T[pi][pj]=0
