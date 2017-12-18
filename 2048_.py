@@ -214,7 +214,118 @@ def movedown(pi,pj,T):
     #code for rightwards arrow key
 # def moveup(pi,pj,T):
     #code for upwards arrow key
-        
+def isuppossible(vec, n):
+    for i in range(n-1,0,-1):
+        for j in range(0,n):
+            if (vec[i][j]!=0 and vec[i-1][j]==0)or(vec[i][j]!=0  and vec[i][j]==vec[i-1][j]):
+                return 1;
+
+    return 0;
+def isdownpossible(vec, n):
+    for i in range(n-2,-1,-1):
+        for j in range(0,n):
+            if (vec[i][j]!=0 and vec[i+1][j]==0)or(vec[i][j]!=0 and vec[i][j]==vec[i+1][j]):
+                return 1;
+
+    return 0;
+def isleftpossible(vec, n):
+    for i in range(0,n):
+       for j in range(n-1,0,-1):
+            if (vec[i][j]!=0 and vec[i][j-1]==0)or(vec[i][j]!=0 and vec[i][j]==vec[i][j-1]):
+                return 1;
+    return 0;
+def isrightpossible(vec, n):
+    for i in range(0,n):
+       for j in range(n-2,-1,-1):
+            if (vec[i][j]!=0 and vec[i][j+1]==0)or(vec[i][j]!=0  and vec[i][j]==vec[i][j+1]):
+                return 1;
+    return 0; 
+def leftmoment( vec, n):
+    for i in range(0,n):
+        m=-1;
+        for j in range(0,n):
+            if(vec[i][j]!=0):
+                if(m==-1):
+                    temp1=vec[i][j];
+                    vec[i][j]=0;
+                    m=m+1;
+                    vec[i][m]=temp1;
+                else:
+                    if(j!=m and vec[i][m]==vec[i][j]):
+                        vec[i][j]=0;
+                        vec[i][m]=vec[i][m]*2;
+                    else:
+                        temp=vec[i][j];
+                        vec[i][j]=0;
+                        m=m+1;
+                        vec[i][m]=temp;
+    
+    return vec;
+    
+def rightmoment( vec, n):
+    for i in range(0,n):
+        m=n;
+        for j in range(n-1,-1,-1):
+            if(vec[i][j]!=0):
+                if(m==n):
+                    temp1=vec[i][j];
+                    vec[i][j]=0;
+                    m=m-1;
+                    vec[i][m]=temp1;
+                else:
+                    if(j!=m and vec[i][m]==vec[i][j]):
+                        vec[i][j]=0;
+                        vec[i][m]=vec[i][m]*2;
+                    else:
+                        temp=vec[i][j];
+                        vec[i][j]=0;
+                        m=m-1;
+                        vec[i][m]=temp;
+    
+    return vec;
+
+def downmoment( vec, n):
+    for j in range(0,n):
+        m=n;
+        for i in range(n-1,-1,-1):
+            if(vec[i][j]!=0):
+                if(m==n):
+                    temp1=vec[i][j];
+                    vec[i][j]=0;
+                    m=m-1;
+                    vec[m][j]=temp1;
+                else:
+                    if(i!=m and vec[m][j]==vec[i][j]):
+                        vec[i][j]=0;
+                        vec[m][j]=vec[m][j]*2;
+                    else:
+                        temp=vec[i][j];
+                        vec[i][j]=0;
+                        m=m-1;
+                        vec[m][j]=temp;
+    
+    return vec;
+def upmoment( vec, n):
+    for j in range(0,n):
+        m=-1;
+        for i in range(0,n):
+            if(vec[i][j]!=0):
+                if(m==-1):
+                    temp1=vec[i][j];
+                    vec[i][j]=0;
+                    m=m+1;
+                    vec[m][j]=temp1;
+                else:
+                    if(i!=m and vec[m][j]==vec[i][j]):
+                        vec[i][j]=0;
+                        vec[m][j]=vec[m][j]*2;
+                    else:
+                        temp=vec[i][j];
+                        vec[i][j]=0;
+                        m=m+1;
+                        vec[m][j]=temp;
+    
+    return vec;
 def terminate():
     pygame.quit()
     sys.exit()
