@@ -214,7 +214,32 @@ def movedown(pi,pj,T):
     #code for rightwards arrow key
 # def moveup(pi,pj,T):
     #code for upwards arrow key
-        
+def isuppossible(vec, n):
+    for i in range(n-1,0,-1):
+        for j in range(0,n):
+            if (vec[i][j]!=-1 and vec[i-1][j]==-1)or(vec[i][j]!=-1  and vec[i][j]==vec[i-1][j]):
+                return 1;
+
+    return 0;
+def isdownpossible(vec, n):
+    for i in range(n-2,-1,-1):
+        for j in range(0,n):
+            if (vec[i][j]!=-1 and vec[i+1][j]==-1)or(vec[i][j]!=-1 and vec[i][j]==vec[i+1][j]):
+                return 1;
+
+    return 0;
+def isleftpossible(vec, n):
+    for i in range(0,n):
+       for j in range(n-1,0,-1):
+            if (vec[i][j]!=-1 and vec[i][j-1]==-1)or(vec[i][j]!=-1 and vec[i][j]==vec[i][j-1]):
+                return 1;
+    return 0;
+def isrightpossible(vec, n):
+    for i in range(0,n):
+       for j in range(n-2,-1,-1):
+            if (vec[i][j]!=-1 and vec[i][j+1]==-1)or(vec[i][j]!=-1  and vec[i][j]==vec[i][j+1]):
+                return 1;
+    return 0;        
 def terminate():
     pygame.quit()
     sys.exit()
