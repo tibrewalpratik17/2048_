@@ -214,7 +214,122 @@ def movedown(pi,pj,T):
     #code for rightwards arrow key
 # def moveup(pi,pj,T):
     #code for upwards arrow key
+def status(vec,n):
+        temp=0
+        n1=math.ceil(n*1.00/2.00)
+        for m in range(0,n1):
+            a=1;
+            for i in range(0,n):
+                for j in range(0,n):
+                    if((i==m or i==n-1-m  or j==m or j==n-1-m) and vec[i][j]!=0):
+                        a=a*vec[i][j];
+            temp=temp-(m*m*a);
+        return temp;
+
+def dfs(vecty, depth, n):
+    flag1=isuppossible(vecty,n);
+    flag2=isdownpossible(vecty,n);
+    flag3=isleftpossible(vecty,n);
+    flag4=isrightpossible(vecty,n);
+    if((not flag1) and (not flag2) and (not flag3 )and  (not flag4)):
+        return 0,-630000000;
+    
+    if(depth==3):
+        return 0,0;
+    temp1=0;
+    temp2=0;
+    temp3=0;
+    temp4=0;
+    u=0.00001;
+    l=00.00001;
+    d=00.00001;
+    r=00.00001;
+    if(flag1):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]];
+        vectemp=upmoment(vec,n);
+        for i in range(0,n):
+            for j in range(0,n):
+                if(vectemp[i][j]==0):
+                    vectemp[i][j]=2;
+                    tas,second=dfs(vectemp,depth+1,n);
+                    a=status(vectemp,n)+second;
+                    vectemp[i][j]=4;
+                    b=status(vectemp,n)+second;
+                    temp1=temp1+a+b;
+                    u=u+2;
+                    vectemp[i][j]=0;
+
+    if(flag2):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]];
+        vectemp=downmoment(vec,n);
+        for i in range(0,n):
+            for j in range(0,n):
+                if(vectemp[i][j]==0):
+                    vectemp[i][j]=2;
+                    tas,second=dfs(vectemp,depth+1,n);
+                    a=status(vectemp,n)+second;
+                    vectemp[i][j]=4;
+                    tas,second=dfs(vectemp,depth+1,n);
+                    b=status(vectemp,n)+second;
+                    temp2=temp2+a+b;
+                    d=d+2;
+                    vectemp[i][j]=0;
+            
+
+    
+    
+    if(flag3):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]];
+        vectemp=leftmoment(vec,n);
+        for i in range(0,n):
+            for j in range(0,n):
+                if(vectemp[i][j]==0):
+                        vectemp[i][j]=2
+                        tas,second=dfs(vectemp,depth+1,n);
+                        a=status(vectemp,n)+second;
+                        vectemp[i][j]=4;
+                        tas,second=dfs(vectemp,depth+1,n);
+                        b=status(vectemp,n)+second;
+                        temp3=temp3+a+b;
+                        l=l+2;
+
+                        vectemp[i][j]=0;
+            
+   
+    if(flag4):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]];
+        vectemp=rightmoment(vec,n);
+        for i in range(0,n):
+                for j in range(0,n):
+                    if(vectemp[i][j]==0):
+                        vectemp[i][j]=2
+                        tas,second=dfs(vectemp,depth+1,n);
+                        a=status(vectemp,n)+second;
+                        vectemp[i][j]=4;
+                        tas,second=dfs(vectemp,depth+1,n);
+                        b=status(vectemp,n)+second;
+                        temp4=temp4+a+b;
+                        r=r+2;
+
+                        vectemp[i][j]=0;
+            
+
+    if((not temp1==0) and (temp1/u>=temp2/d or temp2==0) and (temp1/u>=temp3/l or temp3/l==0) and (temp1/u>=temp4/r or temp4/r==0)):
+        return 2,temp1;
+    
+    if((not temp2==0) and (temp2/d>=temp1/u or temp1==0) and (temp2/d>=temp3/l or temp3/l==0) and (temp2/d>=temp4/r or temp4/r==0) and temp2/d!=0):
+        return 8,temp2;
+    
+    if((not temp4==0) and (temp4/r>=temp2/d or temp2==0) and (temp4/r>=temp3/l or temp3/l==0) and (temp4/r>=temp1/u or temp1==0) and temp4/r!=0):
+        return 6,temp4;
+    if((not temp3==0) and (temp3/l>=temp2/d or temp2==0) and (temp3/l>=temp1/u or temp1==0) and (temp3/l>=temp4/r or temp4/r==0) and temp3!=0):
+        return 4,temp3;
         
+    
 def terminate():
     pygame.quit()
     sys.exit()
