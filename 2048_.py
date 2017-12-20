@@ -2,14 +2,14 @@ import random, pygame, sys
 from pygame.locals import *
 from random import randint
 import copy
+import math
 #defining the window size and other different specifications of the window
-LEVEL = 4
-WINDOWWIDTH = 114*LEVEL
-WINDOWHEIGHT = 114*LEVEL
 FPS = 5
+WINDOWWIDTH = 640
+WINDOWHEIGHT = 695
+boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4
 margin = 5
 thickness = 0
-boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//4
 #defining the RGB for various colours used 
 WHITE= (255, 255, 255)
 BLACK= (  0,   0,   0)
@@ -21,6 +21,8 @@ LIGHTSALMON=(255, 160, 122)
 ORANGE=(221, 118, 7)
 LIGHTORANGE=(227,155,78)
 CORAL=(255, 127, 80)
+BTNBG = (41,37,34)
+BTNHLT = (41,37,60)
 colorback=(189,174,158)
 colorblank=(205,193,180)
 colorlight=(249,246,242)
@@ -52,17 +54,16 @@ dictcolor2={
 512:colorlight,
 1024:colorlight,
 2048:colorlight }
-
 BGCOLOR = LIGHTORANGE
 UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
-TABLE=[[0 for _ in range(4)] for _ in range(4)]
+TABLE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 
 def main():
-    global FPSCLOCK, screen, BASICFONT, running
+    global FPSCLOCK, screen, BASICFONT
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
@@ -87,7 +88,7 @@ def showStartScreen():
         screen.fill(BGCOLOR)
         display_rect = pygame.transform.rotate(titleSurf1, 0)
         rectangle = display_rect.get_rect()
-        rectangle.center = (WINDOWWIDTH/2, WINDOWHEIGHT/2)
+        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
         screen.blit(display_rect, rectangle)
 
         drawPressKeyMsg()
@@ -106,67 +107,49 @@ def randomfill(TABLE):
     empty=False
     w=0
     while not empty:
-        w=randint(0,LEVEL*LEVEL-1)
-        if TABLE[w//LEVEL][w%LEVEL] == 0:
+        w=randint(0,15)
+        if TABLE[w//4][w%4] == 0:
             empty=True
     z=randint(1,5)
     if z==5:
-        TABLE[w//LEVEL][w%LEVEL] = 4
+        TABLE[w//4][w%4] = 4
     else:
-        TABLE[w//LEVEL][w%LEVEL] = 2
+        TABLE[w//4][w%4] = 2
     return TABLE
 
 def drawPressKeyMsg():
-    pressKeySurf = BASICFONT.render("Choose game level : (E)asy, (M)edium, (H)ard", True, WHITE)
+    pressKeySurf = BASICFONT.render('Press a key to play', True, WHITE)
     pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (10, WINDOWHEIGHT - 30)
+    pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
     screen.blit(pressKeySurf, pressKeyRect)
 
 def checkForKeyPress():
     #checking if a key is pressed or not
-    global LEVEL, WINDOWWIDTH, WINDOWHEIGHT, boxsize, screen, TABLE
-
     if len(pygame.event.get(QUIT)) > 0:
         terminate()
 
     keyUpEvents = pygame.event.get(KEYUP)
     if len(keyUpEvents) == 0:
         return None
-        
     if keyUpEvents[0].key == K_ESCAPE:
         terminate()
-        
-    if keyUpEvents[0].key == K_e:
-    	LEVEL = 4
-    	
-    if keyUpEvents[0].key == K_m:
-    	LEVEL = 5
-    	
-    if keyUpEvents[0].key == K_h:
-    	LEVEL = 6
-    	
-    WINDOWWIDTH = 114*LEVEL
-    WINDOWHEIGHT = 114*LEVEL
-    boxsize = min(WINDOWWIDTH,WINDOWHEIGHT)//(LEVEL)
-    screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-    TABLE=[[0 for _ in range(LEVEL)] for _ in range(LEVEL)]
-    
     return keyUpEvents[0].key
-    
+
 def show(TABLE):
     #showing the table
     screen.fill(colorback)
-    myfont = pygame.font.SysFont("Arial", 40, bold=True)
-    for i in range(LEVEL):
-        for j in range(LEVEL):
+    myfont = pygame.font.SysFont("Arial", 100, bold=True)
+    for i in range(4):
+        for j in range(4):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
-                                              i*boxsize+margin,
+                                              50+margin+i*boxsize+margin,
                                               boxsize-2*margin,
                                               boxsize-2*margin),
                                               thickness)
             if TABLE[i][j] != 0:
                 label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+LEVEL*margin-2*margin, boxsize/6+i*boxsize+5*margin))
+                screen.blit(label, (j*boxsize+4*margin, 50+margin+i*boxsize+5*margin))
+                
     pygame.display.update()
 
 def runGame(TABLE):
@@ -174,12 +157,32 @@ def runGame(TABLE):
     TABLE=randomfill(TABLE)
     show(TABLE)
     running=True
-
+    
     while True:
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        if margin+100 > mouse[0] > margin and margin+50 > mouse[1] > margin:
+            pygame.draw.rect(screen, BTNHLT,(margin,margin,100,50))
+            
+            if click[0] == 1 and not clicked:
+                autoPlay(TABLE)
+                clicked = True
+                
+            if not click[0]: clicked = False
+            
+        else:
+            pygame.draw.rect(screen, BTNBG,(margin,margin,100,50))
+            
+        myfont = pygame.font.SysFont("Arial", 24, bold=True)
+        label = myfont.render("Hint", 1, colorblank)
+        screen.blit(label, (5*margin, 4*margin))
+    
         for event in pygame.event.get():
             if event.type == QUIT:
-                terminate()
-                
+                print "quit"
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if running:
                     desired_key = None
@@ -195,29 +198,31 @@ def runGame(TABLE):
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
                         show(TABLE)
+                        
+        pygame.display.update()
  
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
-        for pi in range(1,LEVEL):
-            for pj in range(LEVEL):
+        for pi in range(1,4):
+            for pj in range(4):
                 if TABLE[pi][pj] !=0: TABLE=moveup(pi,pj,TABLE)
     elif DIRECTION =='s':
         for pi in range(2,-1,-1):
-            for pj in range(LEVEL):
+            for pj in range(4):
                 if TABLE[pi][pj] !=0: TABLE=movedown(pi,pj,TABLE)
     elif DIRECTION =='a':
-        for pj in range(1,LEVEL):
-            for pi in range(LEVEL):
+        for pj in range(1,4):
+            for pi in range(4):
                 if TABLE[pi][pj] !=0: TABLE=moveleft(pi,pj,TABLE)
     elif DIRECTION =='d':
         for pj in range(2,-1,-1):
-            for pi in range(LEVEL):
+            for pi in range(4):
                 if TABLE[pi][pj] !=0: TABLE=moveright(pi,pj,TABLE)
     return TABLE
 
 def movedown(pi,pj,T):
     justcomb=False
-    while pi < LEVEL-1 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
+    while pi < 3 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
         if T[pi+1][pj] == 0:
             T[pi+1][pj] = T[pi][pj]
             T[pi][pj]=0
@@ -228,51 +233,264 @@ def movedown(pi,pj,T):
             pi+=1
             justcomb=True
     return T
-    
-def moveleft(pi,pj,T):
-    justcomb=False
-    while pj < LEVEL-1 and (T[pi][pj-1] == 0 or (T[pi][pj-1] == T[pi][pj] and not justcomb)):
-        if T[pi][pj-1] == 0:
-            T[pi][pj-1] = T[pi][pj]
-            T[pi][pj]=0
-            pj+=1
-        elif T[pi][pj-1]==T[pi][pj]:
-            T[pi][pj-1] += T[pi][pj]
-            T[pi][pj] = 0
-            pj+=1
-            justcomb=True
-    return T
-    
-def moveright(pi,pj,T):
-    justcomb=False
-    while pj < LEVEL-1 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
-        if T[pi][pj+1] == 0:
-            T[pi][pj+1] = T[pi][pj]
-            T[pi][pj]=0
-            pj+=1
-        elif T[pi][pj+1]==T[pi][pj]:
-            T[pi][pj+1] += T[pi][pj]
-            T[pi][pj] = 0
-            pj+=1
-            justcomb=True
-    return T
-    
-def moveup(pi,pj,T):
-    justcomb=False
-    while pi < LEVEL-1 and (T[pi-1][pj] == 0 or (T[pi-1][pj] == T[pi][pj] and not justcomb)):
-        if T[pi-1][pj] == 0:
-            T[pi-1][pj] = T[pi][pj]
-            T[pi][pj]=0
-            pi+=1
-        elif T[pi-1][pj]==T[pi][pj]:
-            T[pi-1][pj] += T[pi][pj]
-            T[pi][pj] = 0
-            pi+=1
-            justcomb=True
-    return T
 
+# def moveleft(pi,pj,T):
+    #code for leftwards arrow key
+# def moveright(pi,pj,T):
+    #code for rightwards arrow key
+# def moveup(pi,pj,T):
+    #code for upwards arrow key
+def autoPlay(TABLE):
+    f,s = dfs(TABLE,0,4)
+    
+    #0 no more step possible
+    #4 left
+    #6 right
+    #2 up
+    #8 down
+    
+    if f==4: TABLE = leftmoment(TABLE,4)
+    elif f==6: TABLE = rightmoment(TABLE,4)
+    elif f==2: TABLE = upmoment(TABLE,4)
+    elif f==8: TABLE = downmoment(TABLE,4)
+    
+    else:
+        print "No more step possible"
+        return
+        
+    show(TABLE)
+        
+def isuppossible(vec, n):
+    for i in range(n-1,0,-1):
+        for j in range(0,n):
+            if (vec[i][j]!=0 and vec[i-1][j]==0)or(vec[i][j]!=0  and vec[i][j]==vec[i-1][j]):
+                return 1
+
+    return 0
+def isdownpossible(vec, n):
+    for i in range(n-2,-1,-1):
+        for j in range(0,n):
+            if (vec[i][j]!=0 and vec[i+1][j]==0)or(vec[i][j]!=0 and vec[i][j]==vec[i+1][j]):
+                return 1
+
+    return 0
+def isleftpossible(vec, n):
+    for i in range(0,n):
+       for j in range(n-1,0,-1):
+            if (vec[i][j]!=0 and vec[i][j-1]==0)or(vec[i][j]!=0 and vec[i][j]==vec[i][j-1]):
+                return 1
+    return 0
+def isrightpossible(vec, n):
+    for i in range(0,n):
+       for j in range(n-2,-1,-1):
+            if (vec[i][j]!=0 and vec[i][j+1]==0)or(vec[i][j]!=0  and vec[i][j]==vec[i][j+1]):
+                return 1
+    return 0 
+def leftmoment( vec, n):
+    for i in range(0,n):
+        m=-1
+        for j in range(0,n):
+            if(vec[i][j]!=0):
+                if(m==-1):
+                    temp1=vec[i][j]
+                    vec[i][j]=0
+                    m=m+1
+                    vec[i][m]=temp1
+                else:
+                    if(j!=m and vec[i][m]==vec[i][j]):
+                        vec[i][j]=0
+                        vec[i][m]=vec[i][m]*2
+                    else:
+                        temp=vec[i][j]
+                        vec[i][j]=0
+                        m=m+1
+                        vec[i][m]=temp
+    
+    return vec
+    
+def rightmoment( vec, n):
+    for i in range(0,n):
+        m=n
+        for j in range(n-1,-1,-1):
+            if(vec[i][j]!=0):
+                if(m==n):
+                    temp1=vec[i][j]
+                    vec[i][j]=0
+                    m=m-1
+                    vec[i][m]=temp1
+                else:
+                    if(j!=m and vec[i][m]==vec[i][j]):
+                        vec[i][j]=0
+                        vec[i][m]=vec[i][m]*2
+                    else:
+                        temp=vec[i][j]
+                        vec[i][j]=0
+                        m=m-1
+                        vec[i][m]=temp
+    
+    return vec
+
+def downmoment( vec, n):
+    for j in range(0,n):
+        m=n
+        for i in range(n-1,-1,-1):
+            if(vec[i][j]!=0):
+                if(m==n):
+                    temp1=vec[i][j]
+                    vec[i][j]=0
+                    m=m-1
+                    vec[m][j]=temp1
+                else:
+                    if(i!=m and vec[m][j]==vec[i][j]):
+                        vec[i][j]=0
+                        vec[m][j]=vec[m][j]*2
+                    else:
+                        temp=vec[i][j]
+                        vec[i][j]=0
+                        m=m-1
+                        vec[m][j]=temp
+    
+    return vec
+def upmoment( vec, n):
+    for j in range(0,n):
+        m=-1
+        for i in range(0,n):
+            if(vec[i][j]!=0):
+                if(m==-1):
+                    temp1=vec[i][j]
+                    vec[i][j]=0
+                    m=m+1
+                    vec[m][j]=temp1
+                else:
+                    if(i!=m and vec[m][j]==vec[i][j]):
+                        vec[i][j]=0
+                        vec[m][j]=vec[m][j]*2
+                    else:
+                        temp=vec[i][j]
+                        vec[i][j]=0
+                        m=m+1
+                        vec[m][j]=temp
+    
+    return vec    
+
+
+def status(vec,n):
+        temp=0
+        n1=int(math.ceil(n*1.00/2.00))
+        for m in range(0,n1):
+            a=1
+            for i in range(0,n):
+                for j in range(0,n):
+                    if((i==m or i==n-1-m  or j==m or j==n-1-m) and vec[i][j]!=0):
+                        a=a*vec[i][j]
+            temp=temp-(m*m*a)
+        return temp
+
+def dfs(vecty, depth, n):
+    flag1=isuppossible(vecty,n)
+    flag2=isdownpossible(vecty,n)
+    flag3=isleftpossible(vecty,n)
+    flag4=isrightpossible(vecty,n)
+    if((not flag1) and (not flag2) and (not flag3 )and  (not flag4)):
+        return 0,-630000000
+    
+    if(depth==3):
+        return 0,0
+    temp1=0
+    temp2=0
+    temp3=0
+    temp4=0
+    u=0.00001
+    l=00.00001
+    d=00.00001
+    r=00.00001
+    if(flag1):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]]
+        vectemp=upmoment(vec,n)
+        for i in range(0,n):
+            for j in range(0,n):
+                if(vectemp[i][j]==0):
+                    vectemp[i][j]=2
+                    tas,second=dfs(vectemp,depth+1,n)
+                    a=status(vectemp,n)+second
+                    vectemp[i][j]=4
+                    b=status(vectemp,n)+second
+                    temp1=temp1+a+b
+                    u=u+2
+                    vectemp[i][j]=0
+
+    if(flag2):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]]
+        vectemp=downmoment(vec,n)
+        for i in range(0,n):
+            for j in range(0,n):
+                if(vectemp[i][j]==0):
+                    vectemp[i][j]=2
+                    tas,second=dfs(vectemp,depth+1,n)
+                    a=status(vectemp,n)+second
+                    vectemp[i][j]=4
+                    tas,second=dfs(vectemp,depth+1,n)
+                    b=status(vectemp,n)+second
+                    temp2=temp2+a+b
+                    d=d+2
+                    vectemp[i][j]=0
+            
+
+    
+    
+    if(flag3):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]]
+        vectemp=leftmoment(vec,n)
+        for i in range(0,n):
+            for j in range(0,n):
+                if(vectemp[i][j]==0):
+                        vectemp[i][j]=2
+                        tas,second=dfs(vectemp,depth+1,n)
+                        a=status(vectemp,n)+second
+                        vectemp[i][j]=4
+                        tas,second=dfs(vectemp,depth+1,n)
+                        b=status(vectemp,n)+second
+                        temp3=temp3+a+b
+                        l=l+2
+
+                        vectemp[i][j]=0
+            
+   
+    if(flag4):
+        vec=[[vecty[0][0],vecty[0][1],vecty[0][2],vecty[0][3]],[vecty[0][0],vecty[1][1],vecty[1][2],vecty[1][3]],
+        [vecty[2][0],vecty[2][1],vecty[2][2],vecty[2][3]],[vecty[3][0],vecty[3][1],vecty[3][2],vecty[3][3]]]
+        vectemp=rightmoment(vec,n)
+        for i in range(0,n):
+                for j in range(0,n):
+                    if(vectemp[i][j]==0):
+                        vectemp[i][j]=2
+                        tas,second=dfs(vectemp,depth+1,n)
+                        a=status(vectemp,n)+second
+                        vectemp[i][j]=4
+                        tas,second=dfs(vectemp,depth+1,n)
+                        b=status(vectemp,n)+second
+                        temp4=temp4+a+b
+                        r=r+2
+
+                        vectemp[i][j]=0
+            
+
+    if((not temp1==0) and (temp1/u>=temp2/d or temp2==0) and (temp1/u>=temp3/l or temp3/l==0) and (temp1/u>=temp4/r or temp4/r==0)):
+        return 2,temp1
+    
+    if((not temp2==0) and (temp2/d>=temp1/u or temp1==0) and (temp2/d>=temp3/l or temp3/l==0) and (temp2/d>=temp4/r or temp4/r==0) and temp2/d!=0):
+        return 8,temp2
+    
+    if((not temp4==0) and (temp4/r>=temp2/d or temp2==0) and (temp4/r>=temp3/l or temp3/l==0) and (temp4/r>=temp1/u or temp1==0) and temp4/r!=0):
+        return 6,temp4
+    if((not temp3==0) and (temp3/l>=temp2/d or temp2==0) and (temp3/l>=temp1/u or temp1==0) and (temp3/l>=temp4/r or temp4/r==0) and temp3!=0):
+        return 4,temp3
+        
+    
 def terminate():
-    print "quit"
     pygame.quit()
     sys.exit()
 
