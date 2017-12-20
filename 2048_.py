@@ -2,6 +2,7 @@ import random, pygame, sys
 from pygame.locals import *
 from random import randint
 import copy
+import math
 #defining the window size and other different specifications of the window
 FPS = 5
 WINDOWWIDTH = 640
@@ -24,6 +25,8 @@ colorback=(189,174,158)
 colorblank=(205,193,180)
 colorlight=(249,246,242)
 colordark=(119,110,101)
+
+fontSize=[100,85,70,55,40]
 
 dictcolor1={
 0:colorblank,
@@ -135,7 +138,7 @@ def checkForKeyPress():
 def show(TABLE):
     #showing the table
     screen.fill(colorback)
-    myfont = pygame.font.SysFont("Arial", 100, bold=True)
+    
     for i in range(4):
         for j in range(4):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
@@ -144,8 +147,12 @@ def show(TABLE):
                                               boxsize-2*margin),
                                               thickness)
             if TABLE[i][j] != 0:
+                order=int(math.log10(TABLE[i][j]))
+                myfont = pygame.font.SysFont("Arial", fontSize[order] , bold=True)
                 label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+4*margin, i*boxsize+5*margin))
+                labelRect=label.get_rect()
+                labelRect.topleft=(j*boxsize+(-2+2*order)*margin, i*boxsize+(4+2*order)*margin)
+                screen.blit(label, labelRect)
     pygame.display.update()
 
 def runGame(TABLE):
@@ -199,22 +206,49 @@ def movedown(pi,pj,T):
     while pi < 3 and (T[pi+1][pj] == 0 or (T[pi+1][pj] == T[pi][pj] and not justcomb)):
         if T[pi+1][pj] == 0:
             T[pi+1][pj] = T[pi][pj]
-            T[pi][pj]=0
-            pi+=1
         elif T[pi+1][pj]==T[pi][pj]:
             T[pi+1][pj] += T[pi][pj]
-            T[pi][pj] = 0
-            pi+=1
             justcomb=True
+        T[pi][pj]=0
+        pi+=1
     return T
 
-# def moveleft(pi,pj,T):
-    #code for leftwards arrow key
-# def moveright(pi,pj,T):
-    #code for rightwards arrow key
-# def moveup(pi,pj,T):
-    #code for upwards arrow key
-        
+def moveleft(pi,pj,T):
+    justcomb=False
+    while pj > 0  and (T[pi][pj-1] == 0 or (T[pi][pj-1] == T[pi][pj] and not justcomb)):
+        if T[pi][pj-1] == 0:
+            T[pi][pj-1] = T[pi][pj]   
+        elif T[pi][pj-1]==T[pi][pj]:
+            T[pi][pj-1] += T[pi][pj]
+            justcomb=True
+        T[pi][pj]=0
+        pj-=1
+    return T
+
+def moveright(pi,pj,T):
+    justcomb=False
+    while pj < 3 and (T[pi][pj+1] == 0 or (T[pi][pj+1] == T[pi][pj] and not justcomb)):
+        if T[pi][pj+1] == 0:
+            T[pi][pj+1] = T[pi][pj]
+        elif T[pi][pj+1]==T[pi][pj]:
+            T[pi][pj+1] += T[pi][pj]
+            justcomb=True
+        T[pi][pj] = 0
+        pj+=1
+    return T
+
+def moveup(pi,pj,T):
+    justcomb=False
+    while pi > 0 and (T[pi-1][pj] == 0 or (T[pi-1][pj] == T[pi][pj] and not justcomb)):
+        if T[pi-1][pj] == 0:
+            T[pi-1][pj] = T[pi][pj] 
+        elif T[pi-1][pj]==T[pi][pj]:
+            T[pi-1][pj] += T[pi][pj]
+            justcomb=True
+        T[pi][pj]=0
+        pi-=1
+    return T
+
 def terminate():
     pygame.quit()
     sys.exit()
