@@ -138,7 +138,7 @@ def checkForKeyPress():
 def show(TABLE):
     #showing the table
     screen.fill(colorback)
-    myfont = pygame.font.SysFont("Arial", 100, bold=True)
+    myfont = pygame.font.SysFont("Arial", 60, bold=True)
     for i in range(4):
         for j in range(4):
             pygame.draw.rect(screen, dictcolor1[TABLE[i][j]], (j*boxsize+margin,
@@ -148,7 +148,7 @@ def show(TABLE):
                                               thickness)
             if TABLE[i][j] != 0:
                 label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
-                screen.blit(label, (j*boxsize+4*margin, 50+margin+i*boxsize+5*margin))
+                screen.blit(label, (j*boxsize+4*margin, 70+margin+i*boxsize+5*margin))
                 
     pygame.display.update()
 
@@ -166,7 +166,17 @@ def runGame(TABLE):
             pygame.draw.rect(screen, BTNHLT,(margin,margin,100,50))
             
             if click[0] == 1 and not clicked:
-                autoPlay(TABLE)
+                desired_key, s = dfs(TABLE,0,4)
+                new_table = key(desired_key, copy.deepcopy(TABLE))
+                
+                if desired_key is None:
+                    print "No more movements possible"
+                    return
+                
+                if new_table != TABLE:
+                    TABLE=randomfill(new_table)
+                    show(TABLE)
+                    
                 clicked = True
                 
             if not click[0]: clicked = False
@@ -282,26 +292,6 @@ def moveup(pi,pj,T):
         pi-=1
     return T
     
-def autoPlay(TABLE):
-    f,s = dfs(TABLE,0,4)
-    
-    #0 no more step possible
-    #4 left
-    #6 right
-    #2 up
-    #8 down
-    
-    if f==4: TABLE = leftmoment(TABLE,4)
-    elif f==6: TABLE = rightmoment(TABLE,4)
-    elif f==2: TABLE = upmoment(TABLE,4)
-    elif f==8: TABLE = downmoment(TABLE,4)
-    
-    else:
-        print "No more step possible"
-        return
-        
-    show(TABLE)
-        
 def isuppossible(vec, n):
     for i in range(n-1,0,-1):
         for j in range(0,n):
@@ -418,7 +408,7 @@ def upmoment( vec, n):
 
 def status(vec,n):
         temp=0
-        n1=int(math.ceil(n*1.00/2.00))
+        n1=int(math.ceil(n/2))
         for m in range(0,n1):
             a=1
             for i in range(0,n):
@@ -434,10 +424,10 @@ def dfs(vecty, depth, n):
     flag3=isleftpossible(vecty,n)
     flag4=isrightpossible(vecty,n)
     if((not flag1) and (not flag2) and (not flag3 )and  (not flag4)):
-        return 0,-630000000
+        return None,-630000000
     
     if(depth==3):
-        return 0,0
+        return None,0
     temp1=0
     temp2=0
     temp3=0
@@ -519,17 +509,16 @@ def dfs(vecty, depth, n):
 
                         vectemp[i][j]=0
             
-
     if((not temp1==0) and (temp1/u>=temp2/d or temp2==0) and (temp1/u>=temp3/l or temp3/l==0) and (temp1/u>=temp4/r or temp4/r==0)):
-        return 2,temp1
+        return 'w',temp1
     
     if((not temp2==0) and (temp2/d>=temp1/u or temp1==0) and (temp2/d>=temp3/l or temp3/l==0) and (temp2/d>=temp4/r or temp4/r==0) and temp2/d!=0):
-        return 8,temp2
+        return 's',temp2
     
     if((not temp4==0) and (temp4/r>=temp2/d or temp2==0) and (temp4/r>=temp3/l or temp3/l==0) and (temp4/r>=temp1/u or temp1==0) and temp4/r!=0):
-        return 6,temp4
+        return 'd',temp4
     if((not temp3==0) and (temp3/l>=temp2/d or temp2==0) and (temp3/l>=temp1/u or temp1==0) and (temp3/l>=temp4/r or temp4/r==0) and temp3!=0):
-        return 4,temp3
+        return 'a',temp3
         
     
 def terminate():
