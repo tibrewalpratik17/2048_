@@ -1,6 +1,7 @@
 import random, pygame, sys
 from pygame.locals import *
 from random import randint
+from time import sleep
 import copy
 import math
 #defining the window size and other different specifications of the window
@@ -60,28 +61,31 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
-TABLE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
-
 def main():
-    global FPSCLOCK, screen, BASICFONT
+    global FPSCLOCK, screen, BASICFONT, game_over
 
+    game_over = True
+    
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
     pygame.display.set_caption('2048')
 
-    showStartScreen()
-
     while True:
-        runGame(TABLE)
-        gameover()
+        if game_over:
+            showStartScreen()
+            game_over = False
+            TABLE = [[0 for i in range(4)] for i in range(4)]
+            
+            runGame(TABLE)
 
 
 def showStartScreen():
 #the start screen
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
     titleSurf1 = titleFont.render('2048', True, WHITE, ORANGE)
+    
     drawPressKeyMsg()   
 
     while True:
@@ -156,6 +160,7 @@ def show(TABLE):
     pygame.display.update()
 
 def runGame(TABLE):
+    global game_over
     TABLE=randomfill(TABLE)
     TABLE=randomfill(TABLE)
     show(TABLE)
@@ -181,7 +186,22 @@ def runGame(TABLE):
                     if new_table != TABLE:
                         TABLE=randomfill(new_table)
                         show(TABLE)
- 
+                        
+                    if gameOver(TABLE):
+                        print 'Game over'
+                        game_over=True
+                        return
+                        
+def gameOver(TABLE):
+    temp = TABLE
+    k = 0
+    
+    for desired_key in ['w','s','a','d']:
+        new_table = key(desired_key, copy.deepcopy(TABLE))
+        if new_table == temp: k+=1
+        
+    return k==4
+                        
 def key(DIRECTION,TABLE):
     if   DIRECTION =='w':
         for pi in range(1,4):
