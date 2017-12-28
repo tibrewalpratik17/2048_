@@ -212,9 +212,7 @@ def show(TABLE):
                 myfont = pygame.font.SysFont("Arial", fontSize[order] , bold=True)
                 label = myfont.render("%4s" %(TABLE[i][j]), 1, dictcolor2[TABLE[i][j]] )
                 screen.blit(label, (j*boxsize+2*margin, i*boxsize+9*margin))
-                labelRect=label.get_rect()
-                labelRect.topleft=(j*boxsize+(-2+2*order)*margin, i*boxsize+(4+2*order)*margin)
-                screen.blit(label, labelRect)
+                
     pygame.display.update()
 
 def runGame(TABLE):
