@@ -28,9 +28,8 @@ Here is a brief summary to get you started:
 ## Screenshots
 
 [![Screenshot_from_2017-12-08_00-39-42.png](https://s2.postimg.org/41ek94sbt/Screenshot_from_2017-12-08_00-39-42.png)](https://postimg.org/image/bu5813yat/)
-
-
 [![Screenshot_from_2017-12-04_19-39-27.png](https://s7.postimg.org/sea0arqsr/Screenshot_from_2017-12-04_19-39-27.png)](https://postimg.org/image/e7u9fjfxj/)
+[![Screenshot_from_2017-12-04_12_43_15.png](https://s7.postimg.org/y4gw2ok7v/2017-12-04.png)](https://postimg.org/image/dx3gadmqf/)
 
 ## Issues
 
