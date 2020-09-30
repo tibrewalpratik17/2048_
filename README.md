@@ -1,4 +1,4 @@
-# 2048_
+# 2048-game 
 A pygame implementation of the 2048 game project
 
 ## Requirements
@@ -6,7 +6,7 @@ A pygame implementation of the 2048 game project
 * Python 2.7.6(*usually pre-installed in Ubuntu*)
 * Pygame package for the specified python version.
 
-*For installing the requirements you can check the following [link](https://inventwithpython.com/pygame/chapter1.html).*
+*For installing the requirements you can check the following [link](https://inventwithpython.com/pygame/chapter1.html).
 
 ## The code
 
